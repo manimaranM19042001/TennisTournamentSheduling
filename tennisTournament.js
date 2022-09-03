@@ -161,14 +161,19 @@ function makeShedule(NameList) {
             winners.push(element.winner)
         })
 
+        players = tennisTournament.playerDetails
+        WinnersDetails = players.filter(element => winners.includes(element.Name))
+        sortedWinnersNames = WinnersDetails.map(element => element.Name)
+
         roundDetails[`${roundName}`] = matches
-        playerNameList = winners
+        playerNameList = sortedWinnersNames
     }
     return roundDetails
 }
 
 tennisTournament.rounds = makeShedule(playerNames)
 
+console.log(("Player Details :").toUpperCase());
 console.table(tennisTournament.playerDetails);
 
 roundObj = tennisTournament.rounds
