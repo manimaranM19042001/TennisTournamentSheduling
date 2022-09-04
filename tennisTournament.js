@@ -4,41 +4,49 @@ const tennisTournament = {
             Name: "Somdev Devvarman",
             Rank: 4,
             country: "USA",
+            matchesPlayed: 54,
         },
         {
             Name: "Manimaran",
             Rank: 1,
             country: "India",
+            matchesPlayed: 96,
         },
         {
             Name: "Ramanathan Krishnan",
             Rank: 6,
             country: "England",
+            matchesPlayed: 23,
         },
         {
             Name: "Vijay Amritraj",
             Rank: 7,
             country: "China",
+            matchesPlayed: 54,
         },
         {
             Name: "Leander Paes",
             Rank: 3,
             country: "Africa",
+            matchesPlayed: 91,
         },
         {
             Name: "Mahesh Bhupathi",
             Rank: 5,
             country: "Swiss",
+            matchesPlayed: 45,
         },
         {
             Name: "Rohan Bopanna",
             Rank: 8,
             country: "Italy",
+            matchesPlayed: 56,
         },
         {
             Name: "Sania Mirza",
             Rank: 2,
             country: "Romania",
+            matchesPlayed: 57,
         },
     ]
 }
@@ -161,19 +169,37 @@ function makeShedule(NameList) {
             winners.push(element.winner)
         })
 
-        players = tennisTournament.playerDetails
-        WinnersDetails = players.filter(element => winners.includes(element.Name))
-        sortedWinnersNames = WinnersDetails.map(element => element.Name)
-
         roundDetails[`${roundName}`] = matches
-        playerNameList = sortedWinnersNames
+        playerNameList = winners
     }
     return roundDetails
 }
 
 tennisTournament.rounds = makeShedule(playerNames)
 
-console.log(("Player Details :").toUpperCase());
+//Update no of matches played by by the player
+
+function updateMatchCount(player){
+    playerData = tennisTournament.playerDetails
+    playerData.forEach(function (element) {
+        if (element.Name == player) {
+            element.matchesPlayed = element.matchesPlayed + 1
+        }
+    })
+    return playerData;
+}
+
+rounds = tennisTournament.rounds
+
+for (i in rounds){
+    rounds[i].forEach(function (element){
+        updateMatchCount(element.opponent1)
+        updateMatchCount(element.opponent2)
+    })
+}
+
+// Printing results
+
 console.table(tennisTournament.playerDetails);
 
 roundObj = tennisTournament.rounds
