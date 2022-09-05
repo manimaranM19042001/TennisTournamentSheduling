@@ -1,5 +1,5 @@
 interface roundsType {opponent1 : string;opponent2:string;matchID:string;round:number;pointsOfOpponent1:number;pointsOfOpponent2:number;winner:string}
-interface playerDetailsType {Name : string ; Rank: number; country:string;matchesPlayed:number;playerID:string}
+interface playerDetailsType {Name : string ; Rank: number; country:string;playerID:string;matchesPlayed:number}
 interface tennisTournamentType {playerDetails :playerDetailsType[];rounds:roundsType[]}
 
 const tennisTournament = {
@@ -87,7 +87,15 @@ function sortByRank(TournamentDetails : tennisTournamentType) {
 
 tennisTournament.playerDetails = sortByRank(tennisTournament)
 
-// Create match ID 
+// Function 3 : Sorting the players namelist based on their ranks
+
+function sortNamelistByRank(nameList : string[]) {
+    let list = tennisTournament.playerDetails.filter(element => nameList.includes(element.Name))
+    list.sort((player1, player2) => (player1.Rank - player2.Rank))
+    return (list.map(element => element.Name));
+}
+
+// Function 4 : Create match ID 
 
 function createMatchId(matchDetails : roundsType) : string {
     let suffix1 = String(matchDetails.opponent1.slice(0, 2)).toUpperCase()
@@ -95,40 +103,51 @@ function createMatchId(matchDetails : roundsType) : string {
     return (`TTM_${suffix1}${suffix2}`)
 }
 
-// Finding no of rounds
+let playerNames = tennisTournament.playerDetails.map(playerDetails => playerDetails.Name)
 
-function findNoOfRounds(playersCount : number) {
-    let initial = playersCount
-    let start = 2
-    let listOfPlayersCount : number [] = []
-    let listOfRoundsCount : number [] = []
-    for (let i = 1; i < playersCount; i++) {
-        listOfPlayersCount.push(start)
-        listOfRoundsCount.push(i)
-        start = start * 2
-        if (start > playersCount) {
-            break
-        }
+// Function 5 : Predicting winners based on their rank probability
+
+function predictWinner(opponent1 : string, opponent2 : string) {
+
+    let playerDetails = tennisTournament.playerDetails
+
+    let player1 : string = opponent1
+    let player2 : string = opponent2
+
+    let drawList : string[] = []
+
+    let rankOfPlayer1 = playerDetails.filter(element => element.Name == player1)[0].Rank
+    let rankOfPlayer2 = playerDetails.filter(element => element.Name == player2)[0].Rank
+
+    let probabilityOfPlayer1 = Math.floor(100 / rankOfPlayer1)
+
+    for (let i = 1; i <= probabilityOfPlayer1; i++) {
+        drawList.push(player1)
     }
-    let index = listOfPlayersCount.indexOf(initial)
-    let noOfRounds = listOfRoundsCount[index]
-    return noOfRounds
+
+    let probabilityOfPlayer2 = Math.floor(100 / Math.abs(rankOfPlayer2 - rankOfPlayer1))
+
+    for (let i = 1; i <= probabilityOfPlayer2; i++) {
+        drawList.push(player2)
+    }
+    let lengthOfDrawList = (probabilityOfPlayer1 + probabilityOfPlayer2)
+
+    let drawNumber = Math.floor(Math.random() * lengthOfDrawList)
+
+    let winner = drawList[drawNumber]
+    return winner
 }
 
-let playerNames: string []= tennisTournament.playerDetails.map(playerDetails => playerDetails.Name)
-
-let noOfRoundsOfTheTournament = findNoOfRounds(playerNames.length)
-
-// Function 3 : Making match Shedule
+// Function 6 : Making match Shedule
 
 function makeShedule(NameList : string[]) : roundsType[] {
     let roundDetails = []
     let playerNameList = NameList
     var roundNumber = 1
-    for (let i = 0; i < noOfRoundsOfTheTournament; i++) {
-
+    let i = 1
+    do {
         for (let j = 0; j < playerNameList.length / 2; j += 2) {
-            let subMatch1 :any = {}
+            let subMatch1 :any= {}
             subMatch1.opponent1 = playerNameList[j]
             subMatch1.opponent2 = playerNameList[playerNameList.length - 1 - j]
             subMatch1.matchID = createMatchId(subMatch1)
@@ -136,7 +155,7 @@ function makeShedule(NameList : string[]) : roundsType[] {
             roundDetails.push(subMatch1)
         }
         for (let k = (playerNameList.length / 2) - 1; k >= 1; k -= 2) {
-            let subMatch2 : any = {}
+            let subMatch2 :any= {}
             subMatch2.opponent1 = playerNameList[k]
             subMatch2.opponent2 = playerNameList[playerNameList.length - 1 - k]
             subMatch2.matchID = createMatchId(subMatch2)
@@ -146,44 +165,33 @@ function makeShedule(NameList : string[]) : roundsType[] {
 
         let match = roundDetails
         match.forEach(function (element) {
-            if ( element.round == roundNumber){
-                let points1 = Math.round((Math.random()) * 9)
-                let points2 = Math.round((Math.random()) * 9)
-                element.pointsOfOpponent1 = points1
-                element.pointsOfOpponent2 = points2
-                if (points1 > points2) {
-                    element.winner = element.opponent1
-                } else if (points1 < points2) {
-                    element.winner = element.opponent2
-                } else if (points1 == points2) {
-                    let toss = Math.floor(Math.random() * 2)
-                    if (toss == 0) {
-                        element.winner = element.opponent1
-                    } else {
-                        element.winner = element.opponent2
-                    }
-                }
-            }        
-        })
-
-        let winners : string[] = []
-        roundDetails.forEach(function (element) {
-            if (element.round == roundNumber){
-                winners.push(element.winner)
+            if (element.round == roundNumber) {
+                let playerOne = element.opponent1
+                let playerTwo = element.opponent2
+                element.winner = predictWinner(playerOne, playerTwo)
             }
         })
 
+        var winners : string[] = []
+        roundDetails.forEach(function (element) {
+            if (element.round == roundNumber) {
+                winners.push(element.winner)
+            }
+        })
+        winners = sortNamelistByRank(winners)
         playerNameList = winners
         roundNumber = roundNumber + 1
     }
+    while (winners.length > 1)
+
     return roundDetails
 }
 
 tennisTournament.rounds = makeShedule(playerNames)
 
-//Update no of matches played by by the player
+// Function 7 : Update no of matches played by by the player
 
-function updateMatchCount(player : string ){
+function updateMatchCount(player:string) {
     let playerData = tennisTournament.playerDetails
     playerData.forEach(function (element) {
         if (element.Name == player) {
@@ -196,12 +204,13 @@ function updateMatchCount(player : string ){
 let rounds = tennisTournament.rounds
 
 
-rounds.forEach(function (element){
+rounds.forEach(function (element) {
     updateMatchCount(element.opponent1)
     updateMatchCount(element.opponent2)
 })
 
 // Printing results
+
 console.log("PLAYER'S DATA");
 console.log(tennisTournament.playerDetails);
 //console.table(tennisTournament.rounds);
