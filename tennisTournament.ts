@@ -1,5 +1,5 @@
 interface roundsType {opponent1 : string;opponent2:string;matchID:string;round:number;pointsOfOpponent1:number;pointsOfOpponent2:number;winner:string}
-interface playerDetailsType {Name : string ; Rank: number; country:string;playerID:string}
+interface playerDetailsType {Name : string ; Rank: number; country:string;matchesPlayed:number;playerID:string}
 interface tennisTournamentType {playerDetails :playerDetailsType[];rounds:roundsType[]}
 
 const tennisTournament = {
@@ -8,41 +8,49 @@ const tennisTournament = {
             Name: "Somdev Devvarman",
             Rank: 4,
             country: "USA",
+            matchesPlayed: 54,
         },
         {
             Name: "Manimaran",
             Rank: 1,
             country: "India",
+            matchesPlayed: 96,
         },
         {
             Name: "Ramanathan Krishnan",
             Rank: 6,
             country: "England",
+            matchesPlayed: 23,
         },
         {
             Name: "Vijay Amritraj",
             Rank: 7,
             country: "China",
+            matchesPlayed: 54,
         },
         {
             Name: "Leander Paes",
             Rank: 3,
             country: "Africa",
+            matchesPlayed: 91,
         },
         {
             Name: "Mahesh Bhupathi",
             Rank: 5,
             country: "Swiss",
+            matchesPlayed: 45,
         },
         {
             Name: "Rohan Bopanna",
             Rank: 8,
             country: "Italy",
+            matchesPlayed: 56,
         },
         {
             Name: "Sania Mirza",
             Rank: 2,
             country: "Romania",
+            matchesPlayed: 57,
         },
     ]
 } as tennisTournamentType
@@ -173,6 +181,35 @@ function makeShedule(NameList : string[]) : roundsType[] {
 
 tennisTournament.rounds = makeShedule(playerNames)
 
-// Printing results
+//Update no of matches played by by the player
 
-console.log(tennisTournament);
+function updateMatchCount(player : string ){
+    let playerData = tennisTournament.playerDetails
+    playerData.forEach(function (element) {
+        if (element.Name == player) {
+            element.matchesPlayed = element.matchesPlayed + 1
+        }
+    })
+    return playerData;
+}
+
+let rounds = tennisTournament.rounds
+
+
+rounds.forEach(function (element){
+    updateMatchCount(element.opponent1)
+    updateMatchCount(element.opponent2)
+})
+
+// Printing results
+console.log("PLAYER'S DATA");
+console.log(tennisTournament.playerDetails);
+//console.table(tennisTournament.rounds);
+
+// filtering rounds separately
+console.log("ROUND 1 :");
+console.log(tennisTournament.rounds.filter(element => element.round == 1))
+console.log("ROUND 2 :");
+console.log(tennisTournament.rounds.filter(element => element.round == 2))
+console.log("ROUND 3 :");
+console.log(tennisTournament.rounds.filter(element => element.round == 3))
