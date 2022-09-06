@@ -97,29 +97,45 @@ function createMatchId(matchDetails) {
     return (`TTM_${suffix1}${suffix2}`)
 }
 
+// Function 5 : Make percentageList from player details
+
 playerNames = tennisTournament.playerDetails.map(playerDetails => playerDetails.Name)
 
-// Function 5 : Predicting winners based on their rank probability
+function makePercentageList(TournamentDetails) {
+    playerDetails = TournamentDetails.playerDetails
+    percentageList = []
+    initial = 100
+    for (i = 0; i < playerDetails.length; i++) {
+        subObject = {}
+        subObject.Name = playerDetails[i].Name
+        subObject.percentage = initial
+        percentageList.push(subObject)
+        initial = initial - ((16 / 100) * initial)
+    }
+    return (percentageList);
+}
+
+var percentageListOfPlayers = makePercentageList(tennisTournament)
+
+
+// Function 6 : Predicting winners based on their rank probability
 
 function predictWinner(opponent1, opponent2) {
-
-    playerDetails = tennisTournament.playerDetails
 
     player1 = opponent1
     player2 = opponent2
 
     drawList = []
 
-    rankOfPlayer1 = playerDetails.filter(element => element.Name == player1)[0].Rank
-    rankOfPlayer2 = playerDetails.filter(element => element.Name == player2)[0].Rank
+    percentageOfPlayer1 = percentageListOfPlayers.filter(element => element.Name == player1)[0].percentage
+    percentageOfPlayer2 = percentageListOfPlayers.filter(element => element.Name == player2)[0].percentage
 
-    probabilityOfPlayer1 = Math.floor(100 / rankOfPlayer1)
-
+    probabilityOfPlayer1 = Math.round((percentageOfPlayer1 / (percentageOfPlayer1 + percentageOfPlayer2)) * 100)
     for (i = 1; i <= probabilityOfPlayer1; i++) {
         drawList.push(player1)
     }
 
-    probabilityOfPlayer2 = Math.floor(100 / Math.abs(rankOfPlayer2 - rankOfPlayer1))
+    probabilityOfPlayer2 = (Math.abs(100 - probabilityOfPlayer1))
 
     for (i = 1; i <= probabilityOfPlayer2; i++) {
         drawList.push(player2)
@@ -132,7 +148,7 @@ function predictWinner(opponent1, opponent2) {
     return winner
 }
 
-// Function 6 : Making match Shedule
+// Function 7 : Making match Shedule
 
 function makeShedule(NameList) {
     roundDetails = []
@@ -183,7 +199,7 @@ function makeShedule(NameList) {
 
 tennisTournament.rounds = makeShedule(playerNames)
 
-// Function 7 : Update no of matches played by by the player
+// Function 8 : Update no of matches played by by the player
 
 function updateMatchCount(player) {
     playerData = tennisTournament.playerDetails
@@ -207,9 +223,10 @@ rounds.forEach(function (element) {
 
 console.log("PLAYER'S DATA");
 console.table(tennisTournament.playerDetails);
-//console.table(tennisTournament.rounds);
+console.log("SHEDULE TABLE FOR ALL THE ROUNDS:");
+console.table(tennisTournament.rounds);
 
-// filtering rounds separately
+// filtering rounds separately for eight players
 console.log("ROUND 1 :");
 console.table(tennisTournament.rounds.filter(element => element.round == 1))
 console.log("ROUND 2 :");
