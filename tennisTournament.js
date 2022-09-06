@@ -51,6 +51,8 @@ const tennisTournament = {
     ]
 }
 
+noOfPlayers = tennisTournament.playerDetails.length
+
 // Function 1 : Assigning playerID
 
 function assignPlayerID(TournamentDetails) {
@@ -110,7 +112,7 @@ function makePercentageList(TournamentDetails) {
         subObject.Name = playerDetails[i].Name
         subObject.percentage = initial
         percentageList.push(subObject)
-        initial = initial - ((16 / 100) * initial)
+        initial = initial - (((128/noOfPlayers) / 100) * initial)
     }
     return (percentageList);
 }
@@ -154,7 +156,6 @@ function makeShedule(NameList) {
     roundDetails = []
     playerNameList = NameList
     var roundNumber = 1
-    i = 1
     do {
         for (j = 0; j < playerNameList.length / 2; j += 2) {
             subMatch1 = {}
