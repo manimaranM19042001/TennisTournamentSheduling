@@ -55,6 +55,8 @@ const tennisTournament = {
     ]
 } as tennisTournamentType
 
+var noOfPlayers = tennisTournament.playerDetails.length
+
 // Function 1 : Assigning playerID
 
 function assignPlayerID(TournamentDetails : tennisTournamentType) : playerDetailsType[]{
@@ -118,7 +120,7 @@ function makePercentageList(TournamentDetails : tennisTournamentType ) {
         subObject.Name = playerDetails[i].Name
         subObject.percentage = initial
         percentageList.push(subObject)
-        initial = initial - ((16 / 100) * initial)
+        initial = initial - (((128/noOfPlayers) / 100) * initial)
     }
     return (percentageList);
 }
