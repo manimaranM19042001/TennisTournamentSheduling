@@ -105,27 +105,44 @@ function createMatchId(matchDetails : roundsType) : string {
 
 let playerNames = tennisTournament.playerDetails.map(playerDetails => playerDetails.Name)
 
-// Function 5 : Predicting winners based on their rank probability
+// Function 5 : Make percentageList from player details
 
-function predictWinner(opponent1 : string, opponent2 : string) {
+playerNames = tennisTournament.playerDetails.map(playerDetails => playerDetails.Name)
 
-    let playerDetails = tennisTournament.playerDetails
+function makePercentageList(TournamentDetails : tennisTournamentType ) {
+    let playerDetails = TournamentDetails.playerDetails
+    let percentageList = []
+    let initial = 100
+    for (let i = 0; i < playerDetails.length; i++) {
+        let subObject : any = {}
+        subObject.Name = playerDetails[i].Name
+        subObject.percentage = initial
+        percentageList.push(subObject)
+        initial = initial - ((16 / 100) * initial)
+    }
+    return (percentageList);
+}
 
-    let player1 : string = opponent1
-    let player2 : string = opponent2
+var percentageListOfPlayers = makePercentageList(tennisTournament)
+
+// Function 6 : Predicting winners based on their rank probability
+
+function predictWinner(opponent1 : string, opponent2 : string) : string{
+
+    let player1 = opponent1
+    let player2 = opponent2
 
     let drawList : string[] = []
 
-    let rankOfPlayer1 = playerDetails.filter(element => element.Name == player1)[0].Rank
-    let rankOfPlayer2 = playerDetails.filter(element => element.Name == player2)[0].Rank
+    let percentageOfPlayer1 = percentageListOfPlayers.filter(element => element.Name == player1)[0].percentage
+    let percentageOfPlayer2 = percentageListOfPlayers.filter(element => element.Name == player2)[0].percentage
 
-    let probabilityOfPlayer1 = Math.floor(100 / rankOfPlayer1)
-
+    let probabilityOfPlayer1 = Math.round((percentageOfPlayer1 / (percentageOfPlayer1 + percentageOfPlayer2)) * 100)
     for (let i = 1; i <= probabilityOfPlayer1; i++) {
         drawList.push(player1)
     }
 
-    let probabilityOfPlayer2 = Math.floor(100 / Math.abs(rankOfPlayer2 - rankOfPlayer1))
+    let probabilityOfPlayer2 = (Math.abs(100 - probabilityOfPlayer1))
 
     for (let i = 1; i <= probabilityOfPlayer2; i++) {
         drawList.push(player2)
@@ -138,13 +155,12 @@ function predictWinner(opponent1 : string, opponent2 : string) {
     return winner
 }
 
-// Function 6 : Making match Shedule
+// Function 7 : Making match Shedule
 
 function makeShedule(NameList : string[]) : roundsType[] {
     let roundDetails = []
     let playerNameList = NameList
     var roundNumber = 1
-    let i = 1
     do {
         for (let j = 0; j < playerNameList.length / 2; j += 2) {
             let subMatch1 :any= {}
@@ -189,7 +205,7 @@ function makeShedule(NameList : string[]) : roundsType[] {
 
 tennisTournament.rounds = makeShedule(playerNames)
 
-// Function 7 : Update no of matches played by by the player
+// Function 8 : Update no of matches played by by the player
 
 function updateMatchCount(player:string) {
     let playerData = tennisTournament.playerDetails
@@ -215,7 +231,7 @@ console.log("PLAYER'S DATA");
 console.log(tennisTournament.playerDetails);
 //console.table(tennisTournament.rounds);
 
-// filtering rounds separately
+// filtering rounds separately for eight players
 console.log("ROUND 1 :");
 console.log(tennisTournament.rounds.filter(element => element.round == 1))
 console.log("ROUND 2 :");
