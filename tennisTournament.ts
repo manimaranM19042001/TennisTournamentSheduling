@@ -1,6 +1,6 @@
-interface roundsType {opponent1 : string;opponent2:string;matchID:string;round:number;pointsOfOpponent1:number;pointsOfOpponent2:number;winner:string}
-interface playerDetailsType {Name : string ; Rank: number; country:string;playerID:string;matchesPlayed:number}
-interface tennisTournamentType {playerDetails :playerDetailsType[];rounds:roundsType[]}
+interface RoundsType {opponent1 : string;opponent2:string;matchID:string;round:number;pointsOfOpponent1:number;pointsOfOpponent2:number;winner:string}
+interface PlayerDetailsType {Name : string ; Rank: number; country:string;playerID:string;matchesPlayed:number}
+interface TennisTournamentType {playerDetails :PlayerDetailsType[];rounds:RoundsType[]}
 
 const tennisTournament = {
     playerDetails: [
@@ -53,13 +53,13 @@ const tennisTournament = {
             matchesPlayed: 57,
         },
     ]
-} as tennisTournamentType
+} as TennisTournamentType
 
 var noOfPlayers = tennisTournament.playerDetails.length
 
 // Function 1 : Assigning playerID
 
-function assignPlayerID(TournamentDetails : tennisTournamentType) : playerDetailsType[]{
+function assignPlayerID(TournamentDetails : TennisTournamentType) : PlayerDetailsType[]{
     let GivenPlayerDetails  = TournamentDetails.playerDetails
     GivenPlayerDetails.forEach(function (Details) {
         function PlayerID(Object : any) {
@@ -79,7 +79,7 @@ tennisTournament.playerDetails = assignPlayerID(tennisTournament)
 
 // Function 2 : Sorting the players based on their ranks
 
-function sortByRank(TournamentDetails : tennisTournamentType) {
+function sortByRank(TournamentDetails : TennisTournamentType) {
     let GivenPlayerDetails = TournamentDetails.playerDetails
     GivenPlayerDetails.sort((player1, player2) => {
         return player1.Rank - player2.Rank
@@ -99,7 +99,7 @@ function sortNamelistByRank(nameList : string[]) {
 
 // Function 4 : Create match ID 
 
-function createMatchId(matchDetails : roundsType) : string {
+function createMatchId(matchDetails : RoundsType) : string {
     let suffix1 = String(matchDetails.opponent1.slice(0, 2)).toUpperCase()
     let suffix2 = String(matchDetails.opponent2.slice(matchDetails.opponent2.length - 2, matchDetails.opponent2.length)).toUpperCase()
     return (`TTM_${suffix1}${suffix2}`)
@@ -111,7 +111,7 @@ let playerNames = tennisTournament.playerDetails.map(playerDetails => playerDeta
 
 playerNames = tennisTournament.playerDetails.map(playerDetails => playerDetails.Name)
 
-function makePercentageList(TournamentDetails : tennisTournamentType ) {
+function makePercentageList(TournamentDetails : TennisTournamentType ) {
     let playerDetails = TournamentDetails.playerDetails
     let percentageList = []
     let initial = 100
@@ -159,7 +159,7 @@ function predictWinner(opponent1 : string, opponent2 : string) : string{
 
 // Function 7 : Making match Shedule
 
-function makeShedule(NameList : string[]) : roundsType[] {
+function makeShedule(NameList : string[]) : RoundsType[] {
     let roundDetails = []
     let playerNameList = NameList
     var roundNumber = 1
